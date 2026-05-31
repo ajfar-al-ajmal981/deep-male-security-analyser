@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login – DeepSecure Mail Analyzer</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600&family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            background: #05121f;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* ANIMATED CYBER HEX BACKGROUND */
+        canvas#hexCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.25;
+        }
+
+        /* GLASSMORPHIC LOGIN CARD */
+        .login-card {
+            width: 420px;
+            padding: 30px;
+            border-radius: 18px;
+            background: rgba(15, 32, 55, 0.55);
+            box-shadow: 0 8px 25px rgba(0, 200, 255, 0.25);
+            backdrop-filter: blur(11px);
+            border: 1px solid rgba(0, 200, 255, 0.25);
+            animation: fadeIn 1.2s ease-in-out;
+        }
+
+        .title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #00eaff, #009dff);
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        label {
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+
+        .form-control {
+            background: #0a1a2f;
+            border: 1px solid #123456;
+            color: #fff;
+            border-radius: 10px;
+            padding: 10px 12px;
+            transition: 0.25s;
+        }
+
+        .form-control:focus {
+            border-color: #00d9ff;
+            box-shadow: 0 0 8px #00d9ff;
+            background: #0d2236;
+            color: #fff;
+        }
+
+        .btn-custom {
+            background: #00d9ff;
+            color: #00141e;
+            padding: 12px;
+            font-size: 1.05rem;
+            border-radius: 10px;
+            border: none;
+            font-weight: 700;
+            width: 100%;
+            margin-top: 10px;
+            box-shadow: 0px 0px 15px rgba(0, 200, 255, 0.45);
+            transition: 0.25s ease-in-out;
+        }
+
+        .btn-custom:hover {
+            background: #5ee8ff;
+            box-shadow: 0px 0px 28px rgba(94, 232, 255, 0.75);
+        }
+
+        .signup-link a {
+            color: #6ad9ff;
+            text-decoration: none;
+        }
+
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- 🔷 Animated Cyber Hex Canvas -->
+<canvas id="hexCanvas"></canvas>
+
+<div class="login-card">
+    <h3 class="text-center mb-4 title">Welcome Back</h3>
+
+    <form method="POST">
+        <div class="mb-3">
+            <label>Username / Email</label>
+            <input type="text" name="username" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label>Password</label>
+            <input type="password" name="password" class="form-control" required>
+        </div>
+
+        <button class="btn-custom">Login</button>
+
+        <p class="text-center mt-3 signup-link">
+            Don’t have an account? <a href="/signup">Create Account</a>
+        </p>
+    </form>
+</div>
+
+<!-- 🔷 HEX BACKGROUND ANIMATION SCRIPT -->
+<script>
+const canvas = document.getElementById('hexCanvas');
+const ctx = canvas.getContext('2d');
+
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.onresize = resizeCanvas;
+
+// Hexagon animation
+let hexSize = 25;
+let hexHeight = Math.sin(Math.PI / 3) * hexSize;
+let speed = 0.3;
+let offset = 0;
+
+function drawHex(x, y) {
+    ctx.beginPath();
+    for (let i = 0; i < 6; i++) {
+        ctx.lineTo(
+            x + hexSize * Math.cos((Math.PI / 3) * i + offset),
+            y + hexSize * Math.sin((Math.PI / 3) * i + offset)
+        );
+    }
+    ctx.closePath();
+    ctx.strokeStyle = "#00eaff22";
+    ctx.stroke();
+}
+
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    offset += speed * 0.002;
+
+    for (let y = 0; y < canvas.height + hexHeight; y += hexHeight * 1.5) {
+        for (let x = 0; x < canvas.width + hexSize * 2; x += hexSize * 1.75) {
+            drawHex(
+                x + ((y / hexHeight) % 2) * (hexSize * 0.9),
+                y
+            );
+        }
+    }
+
+    requestAnimationFrame(animate);
+}
+
+animate();
+</script>
+
+</body>
+</html>

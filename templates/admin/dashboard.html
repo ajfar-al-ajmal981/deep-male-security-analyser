@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard – DeepSecure</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top, #071d35, #020b18);
+            color: #eaf7ff;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            height: 100vh;
+            position: fixed;
+            background: rgba(8, 25, 50, 0.95);
+            border-right: 1px solid rgba(0, 200, 255, 0.25);
+            padding: 20px;
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.6rem;
+            text-align: center;
+            margin-bottom: 35px;
+            background: linear-gradient(90deg, #00eaff, #008cff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-link {
+            color: #b7e9ff;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            display: block;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(0, 200, 255, 0.15);
+            color: #00eaff;
+        }
+
+        .btn-logout {
+            background: transparent;
+            border: 1px solid #ff4d4d;
+            color: #ff8080;
+            border-radius: 8px;
+            padding: 8px 12px;
+            width: 100%;
+            margin-top: 40px;
+        }
+
+        .btn-logout:hover {
+            background: #ff4d4d;
+            color: #000;
+        }
+
+        /* Main */
+        .main {
+            margin-left: 260px;
+            padding: 30px;
+        }
+
+        .card {
+            background: rgba(15, 35, 60, 0.65);
+            border: 1px solid rgba(0, 200, 255, 0.25);
+            border-radius: 16px;
+            box-shadow: 0 0 20px rgba(0, 200, 255, 0.15);
+            color: #eaf7ff;
+        }
+
+        .stat {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #00eaff;
+        }
+
+        .sub {
+            font-size: 0.9rem;
+            color: #9bdfff;
+        }
+
+        table {
+            color: #eaf7ff;
+        }
+
+        .badge-safe { background: #4dff88; color: #000; }
+        .badge-phishing { background: #ff4d4d; }
+        .badge-scam { background: #ff6b35; }
+        .badge-spam { background: #ffb84d; color: #000; }
+    </style>
+</head>
+
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="logo">DeepSecure</div>
+
+    <a class="nav-link active" href="/admin/dashboard">📊 Overview</a>
+    <a class="nav-link" href="/admin/threat-trends">📈 Threat Trends</a>
+    <a class="nav-link" href="/admin/model-insights">🧠 Model Insights</a>
+    <a class="nav-link" href="/admin/users">👥 Users</a>
+
+    <a href="/logout">
+        <button class="btn-logout">Logout</button>
+    </a>
+</div>
+
+<!-- Main Content -->
+<div class="main">
+
+    <h2 class="mb-4">Security Analytics Dashboard</h2>
+
+    <!-- KPI Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card p-3 text-center">
+                <p>Total Scans</p>
+                <div class="stat">{{ total_scans }}</div>
+                <div class="sub">All time</div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card p-3 text-center">
+                <p>Total Users</p>
+                <div class="stat">{{ total_users }}</div>
+                <div class="sub">Registered</div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card p-3 text-center">
+                <p>Threat Emails</p>
+                <div class="stat">{{ threat_count }}</div>
+                <div class="sub">Detected</div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card p-3 text-center">
+                <p>High-Risk</p>
+                <div class="stat">{{ high_risk }}</div>
+                <div class="sub">Confidence ≥ 85%</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="card p-4">
+                <h5>Threat Distribution</h5>
+                <canvas id="threatChart"></canvas>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card p-4">
+                <h5>Scan Volume Over Time</h5>
+                <canvas id="scanChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confidence + Scan Type -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="card p-4">
+                <h5>Confidence Level Distribution</h5>
+                <canvas id="confidenceChart"></canvas>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card p-4">
+                <h5>Scan Method Usage</h5>
+                <canvas id="scanTypeChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent High Risk -->
+    <div class="card p-4">
+        <h5 class="mb-3">Recent High-Risk Emails</h5>
+
+        <table class="table table-dark table-hover">
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Sender</th>
+                    <th>Label</th>
+                    <th>Confidence</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in recent_high_risk %}
+                <tr>
+                    <td>{{ row.subject }}</td>
+                    <td>{{ row.sender }}</td>
+                    <td>
+                        <span class="badge 
+                            {% if row.label == 'safe' %}badge-safe
+                            {% elif row.label == 'phishing' %}badge-phishing
+                            {% elif row.label == 'scam' %}badge-scam
+                            {% else %}badge-spam{% endif %}">
+                            {{ row.label|capitalize }}
+                        </span>
+                    </td>
+                    <td>{{ row.confidence }}%</td>
+                    <td>{{ row.created_at }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<!-- Charts Script -->
+<script>
+    const threatData = {{ threat_distribution | tojson }};
+    const scanTrend = {{ scan_trend | tojson }};
+    const confidenceData = {{ confidence_distribution | tojson }};
+    const scanTypeData = {{ scan_type_distribution | tojson }};
+
+    new Chart(document.getElementById('threatChart'), {
+        type: 'doughnut',
+        data: {
+            labels: threatData.map(x => x.label),
+            datasets: [{ data: threatData.map(x => x.count) }]
+        }
+    });
+
+    new Chart(document.getElementById('scanChart'), {
+        type: 'line',
+        data: {
+            labels: scanTrend.map(x => x.day),
+            datasets: [{ data: scanTrend.map(x => x.count), tension: 0.4 }]
+        }
+    });
+
+    new Chart(document.getElementById('confidenceChart'), {
+        type: 'bar',
+        data: {
+            labels: confidenceData.map(x => x.level),
+            datasets: [{ data: confidenceData.map(x => x.count) }]
+        }
+    });
+
+    new Chart(document.getElementById('scanTypeChart'), {
+        type: 'pie',
+        data: {
+            labels: scanTypeData.map(x => x.scan_type),
+            datasets: [{ data: scanTypeData.map(x => x.count) }]
+        }
+    });
+</script>
+
+</body>
+</html>

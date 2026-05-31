@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Scan History – DeepSecure</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top, #071d35, #020b18);
+            color: #eaf7ff;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            background: rgba(8, 25, 50, 0.95);
+            border-right: 1px solid rgba(0, 200, 255, 0.25);
+            padding: 20px;
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(90deg, #00eaff, #008cff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-link {
+            color: #b7e9ff;
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            transition: 0.2s;
+            display: block;
+            text-decoration: none;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(0, 200, 255, 0.15);
+            color: #00eaff;
+        }
+
+        /* Main */
+        .main {
+            margin-left: 250px;
+            padding: 30px;
+        }
+
+        .card {
+            background: rgba(15, 35, 60, 0.65);
+            border: 1px solid rgba(0, 200, 255, 0.25);
+            border-radius: 16px;
+            box-shadow: 0 0 20px rgba(0, 200, 255, 0.15);
+            color: #eaf7ff;
+        }
+
+        .badge-safe { background: #4dff88; color: #000; }
+        .badge-phishing { background: #ff4d4d; }
+        .badge-spam { background: #ffb84d; color: #000; }
+        .badge-scam { background: #ff6b35; }
+
+        .btn-logout {
+            background: transparent;
+            border: 1px solid #ff4d4d;
+            color: #ff8080;
+            border-radius: 8px;
+            padding: 8px 12px;
+            width: 100%;
+            margin-top: 30px;
+        }
+
+        .btn-logout:hover {
+            background: #ff4d4d;
+            color: #000;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            margin-right: 5px;
+            display: inline-block;
+            transition: 0.2s;
+        }
+
+        .btn-view {
+            background: rgba(0, 200, 255, 0.2);
+            color: #00eaff;
+            border: 1px solid rgba(0, 200, 255, 0.4);
+        }
+
+        .btn-view:hover {
+            background: rgba(0, 200, 255, 0.3);
+            color: #00eaff;
+        }
+
+        .btn-download {
+            background: rgba(77, 255, 136, 0.2);
+            color: #4dff88;
+            border: 1px solid rgba(77, 255, 136, 0.4);
+        }
+
+        .btn-download:hover {
+            background: rgba(77, 255, 136, 0.3);
+            color: #4dff88;
+        }
+
+        .btn-delete {
+            background: rgba(255, 77, 77, 0.2);
+            color: #ff8080;
+            border: 1px solid rgba(255, 77, 77, 0.4);
+        }
+
+        .btn-delete:hover {
+            background: rgba(255, 77, 77, 0.3);
+            color: #ff8080;
+        }
+
+        .filter-section {
+            background: rgba(0, 200, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .filter-btn {
+            background: rgba(0, 200, 255, 0.1);
+            color: #b7e9ff;
+            border: 1px solid rgba(0, 200, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 8px;
+            margin-right: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .filter-btn.active {
+            background: rgba(0, 200, 255, 0.3);
+            color: #00eaff;
+            border-color: #00eaff;
+        }
+
+        .filter-btn:hover {
+            background: rgba(0, 200, 255, 0.2);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .pagination {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .page-btn {
+            background: rgba(0, 200, 255, 0.1);
+            color: #00eaff;
+            border: 1px solid rgba(0, 200, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .page-btn.active {
+            background: rgba(0, 200, 255, 0.3);
+            border-color: #00eaff;
+        }
+
+        .page-btn:hover:not(.active) {
+            background: rgba(0, 200, 255, 0.2);
+            color: #00eaff;
+        }
+
+        .search-box {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 200, 255, 0.3);
+            color: #eaf7ff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #00eaff;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="logo" spellcheck="false">DeepSecure</div>
+
+    <a class="nav-link" href="/user/dashboard">Dashboard</a>
+    <a class="nav-link active" href="/user/history">Scan History</a>
+    <a class="nav-link" href="/user/tips">Safety Tips</a>
+
+    <a href="/logout">
+        <button class="btn-logout">Logout</button>
+    </a>
+</div>
+
+<!-- Main Content -->
+<div class="main">
+
+    <h2 class="mb-4">Scan History</h2>
+
+    <!-- Filters -->
+    <div class="filter-section">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <form action="/user/history" method="GET" class="d-inline">
+                    <input type="text" name="search" class="search-box" 
+                           placeholder="Search by subject or sender..." 
+                           value="{{ search_query }}">
+                </form>
+            </div>
+            <div class="col-md-6 text-end">
+                <form action="/user/history" method="GET" class="d-inline">
+                    <button type="submit" name="filter" value="all" 
+                            class="filter-btn {% if filter_type == 'all' %}active{% endif %}">
+                        All ({{ counts.total }})
+                    </button>
+                    <button type="submit" name="filter" value="safe" 
+                            class="filter-btn {% if filter_type == 'safe' %}active{% endif %}">
+                        Safe ({{ counts.safe }})
+                    </button>
+                    <button type="submit" name="filter" value="threats" 
+                            class="filter-btn {% if filter_type == 'threats' %}active{% endif %}">
+                        Threats ({{ counts.threats }})
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Table -->
+    <div class="card p-4">
+        {% if scans and scans|length > 0 %}
+        <div class="table-responsive">
+            <table class="table table-dark table-hover">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Subject</th>
+                        <th>Sender</th>
+                        <th>Result</th>
+                        <th>Confidence</th>
+                        <th>Type</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for scan in scans %}
+                    <tr>
+                        <td>{{ scan.scan_date }}</td>
+                        <td>
+                            {{ scan.subject[:40] }}{% if scan.subject|length > 40 %}...{% endif %}
+                        </td>
+                        <td>
+                            {{ scan.sender[:30] }}{% if scan.sender|length > 30 %}...{% endif %}
+                        </td>
+                        <td>
+                            <span class="badge 
+                                {% if scan.label == 'safe' %}badge-safe
+                                {% elif scan.label == 'phishing' %}badge-phishing
+                                {% elif scan.label == 'scam' %}badge-scam
+                                {% else %}badge-spam{% endif %}">
+                                {{ scan.label|capitalize }}
+                            </span>
+                        </td>
+                        <td>{{ scan.confidence }}%</td>
+                        <td>
+                            {% if scan.scan_type == 'upload' %}📁 Upload
+                            {% else %}📋 Paste{% endif %}
+                        </td>
+                        <td>
+                            <a href="/user/history/view/{{ scan.id }}" class="action-btn btn-view">
+                                👁️ View
+                            </a>
+                            <a href="/user/history/download/{{ scan.id }}" class="action-btn btn-download">
+                                📥 PDF
+                            </a>
+                            <a href="/user/history/delete/{{ scan.id }}" 
+                               class="action-btn btn-delete"
+                               onclick="return confirm('Are you sure you want to delete this scan?')">
+                                🗑️ Delete
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if total_pages > 1 %}
+        <div class="pagination">
+            {% if page > 1 %}
+            <a href="/user/history?page={{ page - 1 }}&filter={{ filter_type }}&search={{ search_query }}" 
+               class="page-btn">← Previous</a>
+            {% endif %}
+
+            {% for p in range(1, total_pages + 1) %}
+                {% if p == page %}
+                    <span class="page-btn active">{{ p }}</span>
+                {% elif p == 1 or p == total_pages or (p >= page - 2 and p <= page + 2) %}
+                    <a href="/user/history?page={{ p }}&filter={{ filter_type }}&search={{ search_query }}" 
+                       class="page-btn">{{ p }}</a>
+                {% elif p == page - 3 or p == page + 3 %}
+                    <span class="page-btn">...</span>
+                {% endif %}
+            {% endfor %}
+
+            {% if page < total_pages %}
+            <a href="/user/history?page={{ page + 1 }}&filter={{ filter_type }}&search={{ search_query }}" 
+               class="page-btn">Next →</a>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <h4>No Scan History</h4>
+            <p class="text-secondary">
+                {% if filter_type != 'all' or search_query %}
+                    No scans found matching your filters.
+                {% else %}
+                    You haven't scanned any emails yet. Start by uploading or pasting an email to analyze.
+                {% endif %}
+            </p>
+            <a href="/user/dashboard" style="color: #00eaff; text-decoration: none;">
+                ← Back to Dashboard
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

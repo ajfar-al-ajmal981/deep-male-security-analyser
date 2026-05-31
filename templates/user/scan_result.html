@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Scan Results – DeepSecure</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@300;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top, #071d35, #020b18);
+            color: #eaf7ff;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(90deg, #00eaff, #008cff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .card {
+            background: rgba(15, 35, 60, 0.65);
+            border: 1px solid rgba(0, 200, 255, 0.25);
+            border-radius: 16px;
+            box-shadow: 0 0 20px rgba(0, 200, 255, 0.15);
+            color: #eaf7ff;
+            margin-bottom: 20px;
+            padding: 25px;
+        }
+
+        .threat-banner {
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            margin-bottom: 30px;
+            border: 2px solid;
+        }
+
+        .threat-safe {
+            background: rgba(77, 255, 136, 0.15);
+            border-color: #4dff88;
+        }
+
+        .threat-phishing {
+            background: rgba(255, 77, 77, 0.15);
+            border-color: #ff4d4d;
+        }
+
+        .threat-spam {
+            background: rgba(255, 184, 77, 0.15);
+            border-color: #ffb84d;
+        }
+
+        .threat-scam {
+            background: rgba(255, 107, 53, 0.15);
+            border-color: #ff6b35;
+        }
+
+        .threat-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .threat-label {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .confidence-bar {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            height: 30px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #000;
+            transition: width 1s ease;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #00eaff;
+            border-bottom: 2px solid rgba(0, 200, 255, 0.3);
+            padding-bottom: 10px;
+        }
+
+        .info-row {
+            display: flex;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(0, 200, 255, 0.1);
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #00eaff;
+            width: 200px;
+            flex-shrink: 0;
+        }
+
+        .info-value {
+            flex-grow: 1;
+            word-break: break-word;
+        }
+
+        .badge-check {
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-pass {
+            background: #4dff88;
+            color: #000;
+        }
+
+        .badge-fail {
+            background: #ff4d4d;
+            color: #fff;
+        }
+
+        .badge-warning {
+            background: #ffb84d;
+            color: #000;
+        }
+
+        .badge-unknown {
+            background: #6c757d;
+            color: #fff;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .feature-item {
+            background: rgba(0, 200, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 200, 255, 0.15);
+        }
+
+        .feature-name {
+            font-weight: 600;
+            color: #b7e9ff;
+            margin-bottom: 5px;
+        }
+
+        .feature-value {
+            color: #00eaff;
+            font-size: 1.1rem;
+        }
+
+        .url-item {
+            background: rgba(0, 200, 255, 0.05);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 3px solid;
+        }
+
+        .url-safe {
+            border-color: #4dff88;
+        }
+
+        .url-suspicious {
+            border-color: #ffb84d;
+        }
+
+        .url-malicious {
+            border-color: #ff4d4d;
+        }
+
+        .attachment-item {
+            background: rgba(0, 200, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .red-flag {
+            background: rgba(255, 77, 77, 0.15);
+            border-left: 4px solid #ff4d4d;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #00eaff, #008cff);
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 25px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.85;
+            color: #000;
+        }
+
+        .btn-secondary {
+            background: rgba(0, 200, 255, 0.15);
+            color: #00eaff;
+            border: 1px solid rgba(0, 200, 255, 0.4);
+            border-radius: 10px;
+            padding: 12px 25px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        .highlight-text {
+            background: rgba(255, 255, 0, 0.2);
+            padding: 2px 4px;
+            border-radius: 3px;
+            color: #ffeb3b;
+        }
+
+        .email-body-preview {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+
+        .score-circle {
+            text-align: center;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    
+    <div class="logo">DeepSecure Mail Analyzer</div>
+
+    <!-- Threat Banner -->
+    <div class="threat-banner threat-{{ result.label }}">
+        <div class="threat-icon">
+            {% if result.label == 'safe' %}✅
+            {% elif result.label == 'phishing' %}🎣
+            {% elif result.label == 'spam' %}📧
+            {% else %}⚠️{% endif %}
+        </div>
+        <div class="threat-label">{{ result.label|upper }}</div>
+        <p style="font-size: 1.1rem; margin-bottom: 0;">
+            {% if result.label == 'safe' %}
+                This email appears to be safe
+            {% elif result.label == 'phishing' %}
+                Phishing attempt detected - Do not interact with this email
+            {% elif result.label == 'spam' %}
+                Spam detected - Exercise caution
+            {% else %}
+                Scam detected - Delete immediately
+            {% endif %}
+        </p>
+        
+        <div class="confidence-bar">
+            <div class="confidence-fill" 
+                 style="width: {{ result.confidence }}%; background: 
+                 {% if result.label == 'safe' %}#4dff88
+                 {% elif result.label == 'phishing' %}#ff4d4d
+                 {% else %}#ffb84d{% endif %};">
+                Confidence: {{ result.confidence }}%
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Basic Info -->
+    <div class="card">
+        <div class="section-title">📧 Email Information (MIME Parsing)</div>
+        
+        <div class="info-row">
+            <div class="info-label">Subject:</div>
+            <div class="info-value">{{ email_data.subject }}</div>
+        </div>
+        
+        <div class="info-row">
+            <div class="info-label">From:</div>
+            <div class="info-value">{{ email_data.from }}</div>
+        </div>
+        
+        <div class="info-row">
+            <div class="info-label">To:</div>
+            <div class="info-value">{{ email_data.to }}</div>
+        </div>
+        
+        <div class="info-row">
+            <div class="info-label">Date:</div>
+            <div class="info-value">{{ email_data.date }}</div>
+        </div>
+
+        {% if email_data.reply_to %}
+        <div class="info-row">
+            <div class="info-label">Reply-To:</div>
+            <div class="info-value">{{ email_data.reply_to }}</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Red Flags -->
+    {% if result.red_flags and result.red_flags|length > 0 %}
+    <div class="card">
+        <div class="section-title">🚩 Red Flags Detected</div>
+        {% for flag in result.red_flags %}
+        <div class="red-flag">
+            <strong>{{ flag.type }}:</strong> {{ flag.message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Email Authentication -->
+    <div class="card">
+        <div class="section-title">🔐 Email Authentication Checks</div>
+        
+        <div class="info-row">
+            <div class="info-label">SPF (Sender Policy Framework):</div>
+            <div class="info-value">
+                <span class="badge-check badge-{{ features.spf_status }}">
+                    {% if features.spf_status == 'pass' %}✓ PASS
+                    {% elif features.spf_status == 'fail' %}✗ FAIL
+                    {% elif features.spf_status == 'warning' %}⚠ SOFT FAIL
+                    {% else %}? UNKNOWN{% endif %}
+                </span>
+                <small style="margin-left: 10px;">{{ features.spf_details }}</small>
+            </div>
+        </div>
+        
+        <div class="info-row">
+            <div class="info-label">DKIM (Domain Keys):</div>
+            <div class="info-value">
+                <span class="badge-check badge-{{ features.dkim_status }}">
+                    {% if features.dkim_status == 'pass' %}✓ PASS
+                    {% elif features.dkim_status == 'fail' %}✗ FAIL
+                    {% else %}? UNKNOWN{% endif %}
+                </span>
+                <small style="margin-left: 10px;">{{ features.dkim_details }}</small>
+            </div>
+        </div>
+        
+        <div class="info-row">
+            <div class="info-label">DMARC (Domain-based Authentication):</div>
+            <div class="info-value">
+                <span class="badge-check badge-{{ features.dmarc_status }}">
+                    {% if features.dmarc_status == 'pass' %}✓ PASS
+                    {% elif features.dmarc_status == 'fail' %}✗ FAIL
+                    {% else %}? UNKNOWN{% endif %}
+                </span>
+                <small style="margin-left: 10px;">{{ features.dmarc_details }}</small>
+            </div>
+        </div>
+
+        <div class="info-row">
+            <div class="info-label">Sender Domain Age:</div>
+            <div class="info-value">
+                {% if features.domain_age_days %}
+                    {{ features.domain_age_days }} days
+                    {% if features.domain_age_days < 30 %}
+                        <span class="badge-check badge-fail">⚠ Very New Domain</span>
+                    {% elif features.domain_age_days < 180 %}
+                        <span class="badge-check badge-warning">⚠ Recent Domain</span>
+                    {% else %}
+                        <span class="badge-check badge-pass">✓ Established</span>
+                    {% endif %}
+                {% else %}
+                    Unknown
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature Engineering -->
+    <div class="card">
+        <div class="section-title">🔬 Feature Engineering Analysis</div>
+        
+        <div class="feature-grid">
+            <div class="feature-item">
+                <div class="feature-name">Text Length</div>
+                <div class="feature-value">{{ features.text_length }} characters</div>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-name">Urgent Words Count</div>
+                <div class="feature-value">{{ features.urgent_words_count }}</div>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-name">Financial Terms</div>
+                <div class="feature-value">{{ features.financial_terms_count }}</div>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-name">Suspicious Phrases</div>
+                <div class="feature-value">{{ features.suspicious_phrases_count }}</div>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-name">Capital Letters Ratio</div>
+                <div class="feature-value">{{ features.capital_ratio }}%</div>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-name">Special Characters</div>
+                <div class="feature-value">{{ features.special_chars_count }}</div>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-name">Exclamation Marks</div>
+                <div class="feature-value">{{ features.exclamation_count }}</div>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-name">Question Marks</div>
+                <div class="feature-value">{{ features.question_count }}</div>
+            </div>
+
+            <div class="feature-item">
+                <div class="feature-name">Contains HTML</div>
+                <div class="feature-value">{% if features.has_html %}Yes{% else %}No{% endif %}</div>
+            </div>
+
+            <div class="feature-item">
+                <div class="feature-name">Spelling Errors</div>
+                <div class="feature-value">{{ features.spelling_errors }}</div>
+            </div>
+        </div>
+
+        {% if features.urgent_words_found and features.urgent_words_found|length > 0 %}
+        <div style="margin-top: 20px;">
+            <strong>Urgent words detected:</strong>
+            <div style="margin-top: 10px;">
+                {% for word in features.urgent_words_found %}
+                    <span class="highlight-text">{{ word }}</span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- URL Analysis -->
+    {% if email_data.urls and email_data.urls|length > 0 %}
+    <div class="card">
+        <div class="section-title">🔗 URL Analysis ({{ email_data.urls|length }} links found)</div>
+        
+        {% for url_info in url_analysis %}
+        <div class="url-item url-{{ url_info.risk_level }}">
+            <div style="margin-bottom: 8px;">
+                <strong>URL:</strong> 
+                <code style="color: #00eaff;">{{ url_info.url }}</code>
+            </div>
+            
+            <div class="info-row" style="border: none; padding: 5px 0;">
+                <div class="info-label" style="width: 150px;">Domain:</div>
+                <div class="info-value">{{ url_info.domain }}</div>
+            </div>
+            
+            <div class="info-row" style="border: none; padding: 5px 0;">
+                <div class="info-label" style="width: 150px;">HTTPS:</div>
+                <div class="info-value">
+                    {% if url_info.is_https %}
+                        <span class="badge-check badge-pass">✓ Secure</span>
+                    {% else %}
+                        <span class="badge-check badge-fail">✗ Not Secure</span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="info-row" style="border: none; padding: 5px 0;">
+                <div class="info-label" style="width: 150px;">URL Shortener:</div>
+                <div class="info-value">
+                    {% if url_info.is_shortened %}
+                        <span class="badge-check badge-warning">⚠ Yes</span>
+                    {% else %}
+                        <span class="badge-check badge-pass">✓ No</span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            {% if url_info.display_text %}
+            <div class="info-row" style="border: none; padding: 5px 0;">
+                <div class="info-label" style="width: 150px;">Display Text:</div>
+                <div class="info-value">{{ url_info.display_text }}</div>
+            </div>
+            {% endif %}
+            
+            {% if url_info.mismatch %}
+            <div class="info-row" style="border: none; padding: 5px 0;">
+                <div class="info-label" style="width: 150px;">Warning:</div>
+                <div class="info-value">
+                    <span class="badge-check badge-fail">⚠ URL Mismatch Detected</span>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="info-row" style="border: none; padding: 5px 0;">
+                <div class="info-label" style="width: 150px;">Risk Assessment:</div>
+                <div class="info-value">
+                    {% if url_info.risk_level == 'safe' %}
+                        <span class="badge-check badge-pass">Low Risk</span>
+                    {% elif url_info.risk_level == 'suspicious' %}
+                        <span class="badge-check badge-warning">Medium Risk</span>
+                    {% else %}
+                        <span class="badge-check badge-fail">High Risk</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card">
+        <div class="section-title">🔗 URL Analysis</div>
+        <p class="text-secondary">No URLs found in this email.</p>
+    </div>
+    {% endif %}
+
+    <!-- Attachment Analysis -->
+    {% if email_data.attachments and email_data.attachments|length > 0 %}
+    <div class="card">
+        <div class="section-title">📎 Attachment Analysis ({{ email_data.attachments|length }} attachments)</div>
+        
+        {% for attachment in email_data.attachments %}
+        <div class="attachment-item">
+            <div>
+                <div style="font-weight: 600; margin-bottom: 5px;">
+                    📄 {{ attachment.name }}
+                </div>
+                <div style="font-size: 0.9rem; color: #b7e9ff;">
+                    Type: {{ attachment.type }}
+                    {% if attachment.size %}
+                     | Size: {{ attachment.size }}
+                    {% endif %}
+                </div>
+            </div>
+            <div>
+                {% if attachment.is_dangerous %}
+                    <span class="badge-check badge-fail">⚠ DANGEROUS</span>
+                {% elif attachment.is_suspicious %}
+                    <span class="badge-check badge-warning">⚠ SUSPICIOUS</span>
+                {% else %}
+                    <span class="badge-check badge-pass">✓ Safe Type</span>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card">
+        <div class="section-title">📎 Attachment Analysis</div>
+        <p class="text-secondary">No attachments found in this email.</p>
+    </div>
+    {% endif %}
+
+    <!-- Email Body Preview -->
+    <div class="card">
+        <div class="section-title">📝 Email Body Preview</div>
+        <div class="email-body-preview">{{ email_data.body_text[:1000] }}{% if email_data.body_text|length > 1000 %}...{% endif %}</div>
+    </div>
+
+    <!-- Technical Headers (Optional - Expandable) -->
+    {% if email_data.headers %}
+    <div class="card">
+        <div class="section-title">⚙️ Technical Headers</div>
+        <details>
+            <summary style="cursor: pointer; color: #00eaff; font-weight: 600;">Click to view full headers</summary>
+            <div class="email-body-preview" style="margin-top: 15px;">
+                {% for key, value in email_data.headers.items() %}
+                <div><strong>{{ key }}:</strong> {{ value }}</div>
+                {% endfor %}
+            </div>
+        </details>
+    </div>
+    {% endif %}
+
+    <!-- Action Buttons -->
+    <div style="text-align: center; margin-top: 30px;">
+        <a href="/user/dashboard" class="btn-primary">← Back to Dashboard</a>
+        <a href="/user/dashboard" class="btn-secondary">Scan Another Email</a>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
