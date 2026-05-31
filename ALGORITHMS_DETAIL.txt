@@ -1,0 +1,93 @@
+DEEPSECURE MAIL ANALYZER - DETAILED ALGORITHM DOCUMENTATION
+==========================================================
+
+This document provides a deep dive into the mathematical and logical algorithms powering the DeepSecure threat detection engine.
+
+1. WEIGHTED THREAT SCORING ALGORITHM (WTSA)
+-------------------------------------------
+The WTSA is the primary decision-making component of the engine. It aggregates findings from multiple analysis modules into a single numerical risk score (0-100).
+
+A. Scoring Vector Components:
+   Let S be the final threat score.
+   S = Σ (Wi * Ci)
+
+   Where:
+   - Wi: Weight of the specific threat indicator.
+   - Ci: Count or boolean presence of the indicator.
+
+B. Defined Weights (Wi):
+   - Urgent Words: 5 pts per unique finding.
+   - Financial Terms: 8 pts per unique finding.
+   - Suspicious Phrases: 10 pts per unique finding.
+   - High Capitalization Ratio (>30%): 15 pts.
+   - Excessive Punctuation (>3 exclamations): 10 pts.
+   - SPF Authentication Failure: 25 pts.
+   - DKIM Authentication Failure: 25 pts.
+   - Domain Age < 30 days: 30 pts.
+   - Domain Age < 180 days: 15 pts.
+   - Malicious URL Detection: 30 pts per URL.
+   - Suspicious URL Detection: 15 pts per URL.
+   - Dangerous Attachment (.exe, etc.): 35 pts per file.
+   - Suspicious Attachment (.zip, .iso): 15 pts per file.
+
+C. Decision Logic:
+   The threshold for classification is based on historical phishing patterns:
+   - IF S >= 60 THEN Class = 'PHISHING' (Likely credential theft or malware delivery)
+   - IF S >= 40 THEN Class = 'SCAM' (Likely financial fraud or social engineering)
+   - IF S >= 25 THEN Class = 'SPAM' (Low-quality bulk marketing)
+   - ELSE Class = 'SAFE'
+
+2. URL RISK ASSESSMENT ENGINE (URAE)
+------------------------------------
+The URAE analyzes every hyperlink within the email body using forensic regex and normalization.
+
+A. Risk Score Calculation (Individual URL):
+   Each URL starts with a base risk of 0.
+   - Insecure Protocol (HTTP): +20 risk.
+   - Known URL Shortener (e.g., bit.ly): +30 risk (used to hide destination).
+   - Visual Mismatch Logic: +40 risk.
+     - Algorithm: If `display_text` contains a domain (e.g., "paypal.com") but the `href` destination is different, mark as Mismatch.
+   - Suspicious Keyword in Path: +15 risk (Keywords: 'login', 'verify', 'update', 'secure').
+
+B. Risk Classification:
+   - Risk >= 40: 'Malicious'
+   - Risk >= 20: 'Suspicious'
+   - Risk < 20: 'Safe'
+
+3. DOMAIN INTELLIGENCE & REPUTATION (DIR)
+-----------------------------------------
+This algorithm correlates real-time WHOIS data with threat probability.
+
+A. Age Calculation:
+   `Age_Days = (Current_Timestamp - WHOIS_Creation_Date) / 86400`
+
+B. Reputation Correlation:
+   Phishers frequently register "look-alike" domains or "disposable" domains just hours before an attack.
+   - Logic: A domain age under 30 days is treated as a high-risk indicator (+30 to WTSA).
+
+4. ATTACHMENT FORENSIC LOGIC (AFL)
+---------------------------------
+The AFL uses a multi-layered check system for files.
+
+A. Recursive Extension Analysis:
+   - Dangerous Extension Check: Hardcoded list of active content (.exe, .scr, .vbs, .bat, .js, .msi).
+   - Suspicious Extension Check: Compressed/Image formats often used for smuggling (.zip, .iso, .7z).
+
+B. Double-Extension Detection Algorithm:
+   - Logic: `If filename.count('.') > 1 then flag as SUSPICIOUS`.
+   - Reason: Attackers use names like `invoice.pdf.exe` hoping users only see the `.pdf` part.
+
+5. SENDER AUTHENTICATION CORRELATION
+------------------------------------
+This algorithm parses the `Authentication-Results` or `authentication-results` headers.
+
+A. Parsing State Machine:
+   The engine scans the header string for specific tokens:
+   - `spf=pass` -> Authorized
+   - `spf=fail` -> Unauthorized (Spoofing risk)
+   - `dkim=pass` -> Integrity Confirmed
+   - `dkim=fail` -> Email Tampered/Forged
+
+----------------------------------------------------------------------------
+Technical Specifications | DeepSecure Security Group
+Last Updated: 2026-02-18
